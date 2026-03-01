@@ -5,9 +5,12 @@ from lib.models import Task, User
 users = {}
 
 
+# TODO: Implement function to add a task for a user
 def add_task(args):
+    # - Check if the user exists, if not, create one
+    # - Create a new Task with the given title
+    # - Add the task to the user's task list
     user = users.get(args.user)
-
     if not user:
         user = User(args.user)
         users[args.user] = user
@@ -16,15 +19,18 @@ def add_task(args):
     user.add_task(task)
 
 
+# TODO: Implement function to mark a task as complete
 def complete_task(args):
+    # - Look up the user by name
+    # - Look up the task by title
+    # - Mark the task as complete
+    # - Print appropriate error messages if not found
     user = users.get(args.user)
-
     if not user:
         print("User not found.")
         return
 
     task = user.get_task_by_title(args.title)
-
     if not task:
         print("Task not found.")
         return
@@ -32,26 +38,29 @@ def complete_task(args):
     task.complete()
 
 
+# CLI entry point
 def main():
     parser = argparse.ArgumentParser(description="Task Manager CLI")
-
     subparsers = parser.add_subparsers(dest="command")
-    subparsers.required = True
 
-    # add-task command
+    # Subparser for adding tasks
     add_parser = subparsers.add_parser("add-task", help="Add a task for a user")
     add_parser.add_argument("user")
     add_parser.add_argument("title")
     add_parser.set_defaults(func=add_task)
 
-    # complete-task command
+    # Subparser for completing tasks
     complete_parser = subparsers.add_parser("complete-task", help="Complete a user's task")
     complete_parser.add_argument("user")
     complete_parser.add_argument("title")
     complete_parser.set_defaults(func=complete_task)
 
     args = parser.parse_args()
-    args.func(args)
+
+    if hasattr(args, "func"):
+        args.func(args)
+    else:
+        parser.print_help()
 
 
 if __name__ == "__main__":
